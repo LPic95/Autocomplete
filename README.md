@@ -316,7 +316,8 @@ First 10 vocabulary:
 Size of vocabulary: 14821
 ```
 
-**Develop N-gram based language models
+Develop N-gram based language models
+----------------
 
 L'assunzione fondamentale del modello che si intende implementare è che la probabilità della prossima parola dipenda esclusivamente dalle precedenti n parole o n-gram
 The conditional probability for the word at position 't' in the sentence, given that the words preceding it are 
