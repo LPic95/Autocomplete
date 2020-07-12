@@ -22,8 +22,17 @@ Suppose the user typed
 
 >Therefore it is necessary to find a `x` word such that "I eat scrambled x" receives the highest probability. If x = "eggs", the sentence would be
 >"I eat scrambled eggs"
+
 <p align="justify">
+  
 The model implementation is based on a simple but powerful approach common in machine translation and speech recognition: **N-grams**.
 </p>
 
-
+```javascript
+import math
+import random
+import numpy as np
+import pandas as pd
+import nltk
+nltk.data.path.append('.')
+```
