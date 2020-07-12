@@ -316,7 +316,7 @@ First 10 vocabulary:
 Size of vocabulary: 14821
 ```
 
-Develop N-gram based language models
+N-gram based language models
 ----------------
 
 L'assunzione fondamentale del modello che si intende implementare è che la probabilità della prossima parola dipenda esclusivamente dalle precedenti n parole o n-gram
