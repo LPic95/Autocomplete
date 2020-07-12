@@ -28,7 +28,7 @@ Suppose the user typed
 The model implementation is based on a simple but powerful approach common in machine translation and speech recognition: **N-grams**.
 </p>
 
-```javascript
+```python script
 import math
 import random
 import numpy as np
@@ -36,3 +36,31 @@ import pandas as pd
 import nltk
 nltk.data.path.append('.')
 ```
+
+```python script
+with open("en_US.twitter.txt", "r") as f:
+    data = f.read()
+print("Data type:", type(data))
+print("Number of letters:", len(data))
+print("First 300 letters of the data")
+print("-------")
+display(data[0:300])
+print("-------")
+
+print("Last 300 letters of the data")
+print("-------")
+display(data[-300:])
+print("-------")
+```
+```
+Data type: <class 'str'>
+Number of letters: 3335477
+First 300 letters of the data
+"How are you? Btw thanks for the RT. You gonna be in DC anytime soon? Love to see you. Been way, way too long.\nWhen you meet someone special... you'll know. Your heart will beat more rapidly and you'll smile for no reason.\nthey've decided its more fun if I don't.\nSo Tired D; Played Lazer Tag & Ran A "
+```
+```
+Last 300 letters of the data
+"ust had one a few weeks back....hopefully we will be back soon! wish you the best yo\nColombia is with an 'o'...“: We now ship to 4 countries in South America 
+(fist pump). Please welcome Columbia to the Stunner Family”\n#GutsiestMovesYouCanMake Giving a cat a bath.\nCoffee after 5 was a TERRIBLE idea.\n"
+```
+</p>
