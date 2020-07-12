@@ -9,10 +9,12 @@ The underlying focus of this project is therefore to develop an embryonic protot
 
 <p align="justify">
 Language models represent the core of lexical auto-complete system: specifically they associate a probability to a sequence of words, in a way that more "likely" sequences receive higher scores. For example, 
-"I have a pen" 
-is expected to have a higher probability than 
-"I am a pen"
-since the first one seems to be a more natural sentence in the real world.
+</p>
+  
+>"I have a pen"
+>is expected to have a higher probability than 
+>"I am a pen"
+>since the first one seems to be a more natural sentence in the real world.
 
 Suppose the user typed 
 "I eat scrambled"
