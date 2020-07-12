@@ -251,3 +251,67 @@ def replace_oov_words_by_unk(tokenized_sentences, vocabulary, unknown_token="<un
         replaced_tokenized_sentences.append(replaced_sentence)    
     return replaced_tokenized_sentences
 ```
+
+The focus now is to jointly use the newly implemented functions in order to identify the less frequent tokens in both training and test sets and then replace them with the "<unk>" marker.
+
+```python script
+def preprocess_data(train_data, test_data, count_threshold):
+    # Get the closed vocabulary using the train data
+    vocabulary = get_words_with_nplus_frequency(train_data,count_threshold)
+    train_data_replaced=[]
+    test_data_replaced=[]
+    # For the train data, replace less common words with "<unk>"
+    for sentence in range(len(train_data)):
+        parole=[]
+        for word in range(len(train_data[sentence])):
+            if train_data[sentence][word] in vocabulary:
+                parole.append(train_data[sentence][word])
+            else:
+                parole.append("<unk>")
+                
+        train_data_replaced.append(parole)
+    # For the test data, replace less common words with "<unk>"
+    
+    for sentence in range(len(test_data)):
+        parole_test=[]
+        for word in range(len(test_data[sentence])):
+            if test_data[sentence][word] in vocabulary:
+                parole_test.append(test_data[sentence][word])
+            else:
+                parole_test.append("<unk>")
+        test_data_replaced.append(parole_test)
+
+    return train_data_replaced, test_data_replaced, vocabulary
+  ```
+The data preprocess is almost finished, it' s only a matter of choosing a minimum frequency for the words.
+
+ ```python script
+minimum_freq = 2
+train_data_processed, test_data_processed, vocabulary = preprocess_data(train_data, test_data,minimum_freq)
+```
+
+ ```python script
+print("First preprocessed training sample:")
+print(train_data_processed[0])
+print()
+print("First preprocessed test sample:")
+print(test_data_processed[0])
+print()
+print("First 10 vocabulary:")
+print(vocabulary[0:10])
+print()
+print("Size of vocabulary:", len(vocabulary))
+```
+
+```
+First preprocessed training sample:
+['i', 'personally', 'would', 'like', 'as', 'our', 'official', 'glove', 'of', 'the', 'team', 'local', 'company', 'and', 'quality', 'production']
+
+First preprocessed test sample:
+['that', 'picture', 'i', 'just', 'seen', 'whoa', 'dere', '!', '!', '>', '>', '>', '>', '>', '>', '>']
+
+First 10 vocabulary:
+['i', 'personally', 'would', 'like', 'as', 'our', 'official', 'glove', 'of', 'the']
+
+Size of vocabulary: 14821
+```
