@@ -36,6 +36,11 @@ import pandas as pd
 import nltk
 nltk.data.path.append('.')
 ```
+<p align="justify">
+  
+The dataset adopted, [twitter data](https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip), is a long string that contains a multitude of tweets separated by a break indicator "\n".
+</p>
+
 
 ```python script
 with open("en_US.twitter.txt", "r") as f:
