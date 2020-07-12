@@ -72,7 +72,7 @@ Last 300 letters of the data
 <p align="justify">
 
 Once the dataset is loaded, you proceed with a data split using the "\n" marker as delimiter.You go ahead by removing leading spaces and eliminating the empty strings as shown in the next code box.
-
+</p>
 ```python script
 def split_to_sentences(data):
     """
@@ -182,7 +182,7 @@ First test sample
 ['that', 'picture', 'i', 'just', 'seen', 'whoa', 'dere', '!', '!', '>', '>', '>', '>', '>', '>', '>']
 ```
 Due to computational reasons, not all words are used but only the most frequent ones, so it is defined a function that can enumerate the frequency of each word and then consider only those that appear more than N times in the train dataset.
-
+</p>
 ```python script
 def count_words(tokenized_sentences):   
     word_counts = {}
@@ -195,12 +195,12 @@ def count_words(tokenized_sentences):
                 word_counts[token] += 1
     return word_counts
 ```
-
+<p align="justify">
 In the definition of auto-complete systems the treatment of words that are missing in the training is of crucial importance. They are known as unknown word or out of vocabulary words. The main related problem is that if they are not observed in training set, the model is incapable of determining which words to suggest.
 To handle unknown words during prediction, use a special token to represent all unknown words 'unk'. 
 A canonical approach in this context is to modify the training dataset so that it has some 'unknown' words to train on.
 In detail, there is a tendency to convert words that occur less frequently into "unk" tokens.
-
+</p>
 ```python script
 def get_words_with_nplus_frequency(tokenized_sentences, count_threshold):
     # Initialize an empty list to contain the words that
@@ -318,8 +318,17 @@ Size of vocabulary: 14821
 
 N-gram based language models
 ----------------
-
+<p align="justify">
 L'assunzione fondamentale del modello che si intende implementare è che la probabilità della prossima parola dipenda esclusivamente dalle precedenti n parole o n-gram
 The conditional probability for the word at position 't' in the sentence, given that the words preceding it are 
 <img src="https://render.githubusercontent.com/render/math?math=w_{t-1}, w_{t-2} \cdots w_{t-n}"> is:
-<img src="https://render.githubusercontent.com/render/math?math=P(w_t | w_{t-1}\dots w_{t-n})">.
+<img src="https://render.githubusercontent.com/render/math?math=P(w_t | w_{t-1}\dots w_{t-n})">. La stima della probabilità avviene nel seguente modo: <img src="https://render.githubusercontent.com/render/math?math=\hat{P}(w_t | w_{t-1}\dots w_{t-n}) = \frac{C(w_{t-1}\dots w_{t-n}, w_n)}{C(w_{t-1}\dots w_{t-n})}"> ove <img src="https://render.githubusercontent.com/render/math?math=C(\cdots)"> denotes the number of occurence of the given sequence. The numerator is the number of times word 't' appears after words t-1 through t-n appear in the training data while the denominator is the number of times word t-1 through t-n appears in the training data.
+
+When computing the counts for n-grams, prepare the sentence beforehand by prepending <img src="https://render.githubusercontent.com/render/math?math=n-1"> starting markers "<s>" to indicate the beginning of the sentence.
+  
+>For example, in the bi-gram model (N=2), a sequence with two start tokens "<s><s>" should predict the first word of a >sentence.
+>So, if the sentence is "I like food", modify it to be "<s><s> I like food".
+>Also prepare the sentence for counting by appending an end token "<e>" so that the model can predict when to finish a >sentence.
+</p>
+
+
