@@ -181,14 +181,73 @@ First training sample:
 First test sample
 ['that', 'picture', 'i', 'just', 'seen', 'whoa', 'dere', '!', '!', '>', '>', '>', '>', '>', '>', '>']
 ```
+Due to computational reasons, not all words are used but only the most frequent ones, so it is defined a function that can enumerate the frequency of each word and then consider only those that appear more than N times in the train dataset.
 
+```python script
+def count_words(tokenized_sentences):   
+    word_counts = {}
+    for sentence in range(len(tokenized_sentences)): 
+        # Go through each token in the sentence
+        for token in (tokenized_sentences[sentence]): 
+            if token not in word_counts.keys(): 
+                word_counts[token] = 1
+            else:
+                word_counts[token] += 1
+    return word_counts
+```
 
-Find tokens that appear at least N times in the training data.
-Replace tokens that appear less than N times by <unk>
-Note: we omit validation data in this exercise.
-In real applications, we should hold a part of data as a validation set and use it to tune our training.
-We skip this process for simplicity.
+In the definition of auto-complete systems the treatment of words that are missing in the training is of crucial importance. They are known as unknown word or out of vocabulary words. The main related problem is that if they are not observed in training set, the model is incapable of determining which words to suggest.
+To handle unknown words during prediction, use a special token to represent all unknown words 'unk'. 
+A canonical approach in this context is to modify the training dataset so that it has some 'unknown' words to train on.
+In detail, there is a tendency to convert words that occur less frequently into "unk" tokens.
 
+```python script
+def get_words_with_nplus_frequency(tokenized_sentences, count_threshold):
+    # Initialize an empty list to contain the words that
+    # appear at least 'minimum_freq' times.
+    closed_vocab = []
+ 
+    word_counts = count_words(tokenized_sentences)
 
+    # for each word and its count
+    for word, cnt in word_counts.items(): 
+        
+        # check that the word's count
+        # is at least as great as the minimum count
+        if cnt>=count_threshold:
 
+            closed_vocab.append(word)
+    return closed_vocab
+```
 
+```python script
+def replace_oov_words_by_unk(tokenized_sentences, vocabulary, unknown_token="<unk>"):
+  
+    vocabulary = set(vocabulary)
+    
+    # Initialize a list that will hold the sentences
+    # after less frequent words are replaced by the unknown token
+    replaced_tokenized_sentences = []
+    
+    # Go through each sentence
+    for sentence in tokenized_sentences:
+        
+        # Initialize the list that will contain
+        # a single sentence with "unknown_token" replacements
+        replaced_sentence = []
+
+        # for each token in the sentence
+        for token in sentence: 
+            
+            # Check if the token is in the closed vocabulary
+            if token in vocabulary:
+                # If so, append the word to the replaced_sentence
+                replaced_sentence.append(token)
+            else:
+                # otherwise, append the unknown token instead
+                replaced_sentence.append(unknown_token)
+
+        # Append the list of tokens to the list of lists
+        replaced_tokenized_sentences.append(replaced_sentence)    
+    return replaced_tokenized_sentences
+```
