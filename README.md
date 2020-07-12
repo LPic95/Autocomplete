@@ -68,4 +68,127 @@ Last 300 letters of the data
 "ust had one a few weeks back....hopefully we will be back soon! wish you the best yo\nColombia is with an 'o'...“: We now ship to 4 countries in South America 
 (fist pump). Please welcome Columbia to the Stunner Family”\n#GutsiestMovesYouCanMake Giving a cat a bath.\nCoffee after 5 was a TERRIBLE idea.\n"
 ```
+
+<p align="justify">
+
+Once the dataset is loaded, you proceed with a data split using the "\n" marker as delimiter.You go ahead by removing leading spaces and eliminating the empty strings as shown in the next code box.
+
+```python script
+def split_to_sentences(data):
+    """
+    Split data by linebreak "\n"
+    Args:
+    data: str
+    Returns:
+        A list of sentences
+    """
+    sentences = data.split("\n")
+    # - Remove leading and trailing spaces from each sentence
+    # - Drop sentences if they are empty strings.
+    sentences = [s.strip() for s in sentences]
+    sentences = [s for s in sentences if len(s) > 0] 
+    return sentences    
+```
+
+```python script
+#Example
+x = """
+I have a pen.\nI have an apple. \nAh\nApple pen.\n
+"""
+print(x)
+split_to_sentences(x)
+```
+```
+I have a pen.
+I have an apple. 
+Ah
+Apple pen.
+
+['I have a pen.', 'I have an apple.', 'Ah', 'Apple pen.']
+```
+
+<p align="justify">
+The next step is to tokenize sentences i.e. split a sentence into a list of words. 
+At this stage, special attention is also provided to convert all words into lower case so that all words can be treated equally.
 </p>
+
+```python script
+def tokenize_sentences(sentences):
+    # Initialize the list of lists of tokenized sentences
+    tokenized_sentences = []
+    # Go through each sentence
+    for sentence in sentences:
+        
+        # Convert to lowercase letters
+        sentence = sentence.lower()
+        
+        # Convert into a list of words
+        tokenized = nltk.word_tokenize(sentence)
+        
+        # append the list of words to the list of lists
+        tokenized_sentences.append(tokenized)
+    
+    return tokenized_sentences
+  ```
+```python script
+#Example
+sentences = ["Sky is blue.", "Leaves are green.", "Roses are red."]
+tokenize_sentences(sentences)
+```
+```
+[['sky', 'is', 'blue', '.'],
+ ['leaves', 'are', 'green', '.'],
+ ['roses', 'are', 'red', '.']]
+```
+<p align="justify">
+The functions described so far are jointly adopted to apply them to an entire dataset and not only to a single sentence.
+</p>
+
+
+```python script
+def get_tokenized_data(data):
+    # Get the sentences by splitting up the data
+    sentences = split_to_sentences(data)
+    # Get the list of lists of tokens by tokenizing the sentences
+    tokenized_sentences = tokenize_sentences(sentences)
+    return tokenized_sentences
+```
+Now the train and the test set are defined, as each sentence is divided into tokens, 
+
+```python script
+tokenized_data = get_tokenized_data(data)
+random.seed(87)
+random.shuffle(tokenized_data)
+train_size = int(len(tokenized_data) * 0.8)
+train_data = tokenized_data[0:train_size]
+test_data = tokenized_data[train_size:]
+```
+
+```python script
+print("{} data are split into {} train and {} test set".format(
+    len(tokenized_data), len(train_data), len(test_data)))
+
+print("First training sample:")
+print(train_data[0])
+      
+print("First test sample")
+print(test_data[0])
+```
+```
+47961 data are split into 38368 train and 9593 test set
+First training sample:
+['i', 'personally', 'would', 'like', 'as', 'our', 'official', 'glove', 'of', 'the', 'team', 'local', 'company', 'and', 'quality', 'production']
+First test sample
+['that', 'picture', 'i', 'just', 'seen', 'whoa', 'dere', '!', '!', '>', '>', '>', '>', '>', '>', '>']
+```
+
+
+Find tokens that appear at least N times in the training data.
+Replace tokens that appear less than N times by <unk>
+Note: we omit validation data in this exercise.
+In real applications, we should hold a part of data as a validation set and use it to tune our training.
+We skip this process for simplicity.
+
+
+
+
