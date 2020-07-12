@@ -381,3 +381,112 @@ Uni-gram:
 Bi-gram:
 {('<s>', '<s>'): 2, ('<s>', 'i'): 1, ('i', 'like'): 1, ('like', 'a'): 2, ('a', 'cat'): 2, ('cat', '<e>'): 2, ('<s>', 'this'): 1, ('this', 'dog'): 1, ('dog', 'is'): 1, ('is', 'like'): 1}
 ```
+<p align="justify">
+After defining the function that calculates the numerator and denominator, the probability of interest can now be estimated.This formula doesn't work when a count of an n-gram is zero. A way to handle zero counts is to add k-smoothing.
+</p>
+```python script
+def estimate_probability(word, previous_n_gram, 
+                         n_gram_counts, n_plus1_gram_counts, vocabulary_size, k=1.0):
+    """
+    Estimate the probabilities of a next word using the n-gram counts with k-smoothing
+    Args:
+        word: next word
+        previous_n_gram: A sequence of words of length n
+        n_gram_counts: Dictionary of counts of (n+1)-grams
+        n_plus1_gram_counts: Dictionary of counts of (n+1)-grams
+        vocabulary_size: number of words in the vocabulary
+        k: positive constant, smoothing parameter
+    
+    Returns:
+        A probability
+    """
+    if type(previous_n_gram)==list:
+        previous_n_grams = tuple(previous_n_gram)
+    else:
+        previous_n_grams = tuple([previous_n_gram])
+    # Set the denominator
+    previous_n_gram_count = n_gram_counts.get(previous_n_grams,0)
+        
+    # Calculate the denominator using the count of the previous n gram
+    # and apply k-smoothing
+    denominator = previous_n_gram_count+vocabulary_size*1
+
+    # Define n plus 1 gram as the previous n-gram plus the current word as a tuple
+    n_plus1_gram =previous_n_grams+tuple([word])
+  
+    # Set the count to the count in the dictionary,
+    # otherwise 0 if not in the dictionary
+    # use the dictionary that has counts for the n-gram plus current word
+    n_plus1_gram_count = n_plus1_gram_counts.get(n_plus1_gram,0)
+        
+    # Define the numerator use the count of the n-gram plus current word,
+    # and apply smoothing
+    numerator = n_plus1_gram_count+k
+
+    # Calculate the probability as the numerator divided by denominator
+    probability = numerator/denominator
+    probability = float(probability)
+    return probability
+```
+The function defined below loops over all words in vocabulary to calculate probabilities for all possible words.
+```python script
+def estimate_probabilities(previous_n_gram, n_gram_counts, n_plus1_gram_counts, vocabulary, k=1.0):
+ 
+    previous_n_gram = previous_n_gram
+    # add <e> <unk> to the vocabulary
+    # <s> is not needed since it should not appear as the next word
+    vocabulary = vocabulary + ["<e>", "<unk>"]
+    vocabulary_size = len(vocabulary)
+    probabilities = {}
+    for word in vocabulary:
+        probability = estimate_probability(word, previous_n_gram, 
+                                           n_gram_counts, n_plus1_gram_counts, 
+                                           vocabulary_size, k=k)
+        probabilities[word] = probability
+    return probabilities
+```
+- It can be more intuitive to present them as count or probability matrices.
+- The functions defined in the next cells return count or probability matrices.
+- This function is provided for you.
+
+```python script
+def make_count_matrix(n_plus1_gram_counts, vocabulary):
+    # add <e> <unk> to the vocabulary
+    # <s> is omitted since it should not appear as the next word
+    vocabulary = vocabulary + ["<e>", "<unk>"]
+    n_grams = []
+    for n_plus1_gram in n_plus1_gram_counts.keys():
+        n_gram = n_plus1_gram[0:-1]
+        n_grams.append(n_gram)
+    n_grams = list(set(n_grams))
+    
+
+    row_index = {n_gram:i for i, n_gram in enumerate(n_grams)}
+
+    col_index = {word:j for j, word in enumerate(vocabulary)}
+
+    nrow = len(n_grams)
+    ncol = len(vocabulary)
+    count_matrix = np.zeros((nrow, ncol))
+    for n_plus1_gram, count in n_plus1_gram_counts.items():
+        n_gram = n_plus1_gram[0:-1]
+        word = n_plus1_gram[-1]
+        if word not in vocabulary:
+            continue
+        i = row_index[n_gram]
+        j = col_index[word]
+        count_matrix[i, j] = count
+    
+    count_matrix = pd.DataFrame(count_matrix, index=n_grams, columns=vocabulary)
+    return count_matrix
+ ```
+The following function calculates the probabilities of each word given the previous n-gram, and stores this in matrix form.
+ ```python script
+ def make_probability_matrix(n_plus1_gram_counts, vocabulary, k):
+    count_matrix = make_count_matrix(n_plus1_gram_counts, unique_words)
+    count_matrix += k
+    prob_matrix = count_matrix.div(count_matrix.sum(axis=1), axis=0)
+    return prob_matrix
+ ```
+ 
+      
