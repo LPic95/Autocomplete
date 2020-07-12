@@ -324,10 +324,10 @@ The conditional probability for the word at position 't' in the sentence, given 
 <img src="https://render.githubusercontent.com/render/math?math=w_{t-1}, w_{t-2} \cdots w_{t-n}"> is:
 <img src="https://render.githubusercontent.com/render/math?math=P(w_t | w_{t-1}\dots w_{t-n})">. La stima della probabilità avviene nel seguente modo: <img src="https://render.githubusercontent.com/render/math?math=\hat{P}(w_t | w_{t-1}\dots w_{t-n}) = \frac{C(w_{t-1}\dots w_{t-n}, w_n)}{C(w_{t-1}\dots w_{t-n})}"> ove <img src="https://render.githubusercontent.com/render/math?math=C(\cdots)"> denotes the number of occurence of the given sequence. The numerator is the number of times word 't' appears after words t-1 through t-n appear in the training data while the denominator is the number of times word t-1 through t-n appears in the training data.
 
-When computing the counts for n-grams, prepare the sentence beforehand by prepending <img src="https://render.githubusercontent.com/render/math?math=n-1"> starting markers "<s>" to indicate the beginning of the sentence.
+When computing the counts for n-grams, prepare the sentence beforehand by prepending <img src="https://render.githubusercontent.com/render/math?math=n-1"> starting markers "<s\>" to indicate the beginning of the sentence.
   
->For example, in the bi-gram model (N=2), a sequence with two start tokens "<s><s>" should predict the first word of a >sentence.
->So, if the sentence is "I like food", modify it to be "<s><s> I like food".
+>For example, in the bi-gram model (N=2), a sequence with two start tokens "<s\><s\>" should predict the first word of a >sentence.
+>So, if the sentence is "I like food", modify it to be "<s\><s\> I like food".
 >Also prepare the sentence for counting by appending an end token "<e>" so that the model can predict when to finish a >sentence.
 </p>
 
