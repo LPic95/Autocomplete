@@ -331,4 +331,53 @@ When computing the counts for n-grams, prepare the sentence beforehand by prepen
 >Also prepare the sentence for counting by appending an end token "<e\>" so that the model can predict when to finish a >sentence.
 </p>
 
+The following function count_n_grams computes the n-grams count for each arbitrary n number.
+ ```python script
+def count_n_grams(data, n, start_token='<s>', end_token = '<e>'):
+    # Initialize dictionary of n-grams and their counts
+    n_grams = {}
+    for sentence in range(len(data)):
+        
+        # prepend start token n times, and  append <e> one time
+        sentences = [start_token]*n+list(data[sentence])+[end_token]
+        
+        # convert list to tuple
+        # So that the sequence of words can be used as
+        # a key in the dictionary
+        sentences = tuple(sentences)
+        
+        # Use 'i' to indicate the start of the n-gram
+        # from index 0
+        # to the last index where the end of the n-gram
+        # is within the sentence.
+        
+        for i in range(0,len(sentences)-n+1): 
 
+            # Get the n-gram from i to i+n
+            n_gram = sentences[i:i+n]
+
+            # check if the n-gram is in the dictionary
+            if n_gram in n_grams.keys(): 
+            
+                # Increment the count for this n-gram
+                n_grams[n_gram] += 1
+            else:
+                # Initialize this n-gram count to 1
+                n_grams[n_gram] = 1
+    return n_grams
+ ```
+```python script
+#Example
+sentences = [['i', 'like', 'a', 'cat'],
+             ['this', 'dog', 'is', 'like', 'a', 'cat']]
+print("Uni-gram:")
+print(count_n_grams(sentences, 1))
+print("Bi-gram:")
+print(count_n_grams(sentences, 2))
+```
+```
+Uni-gram:
+{('<s>',): 2, ('i',): 1, ('like',): 2, ('a',): 2, ('cat',): 2, ('<e>',): 2, ('this',): 1, ('dog',): 1, ('is',): 1}
+Bi-gram:
+{('<s>', '<s>'): 2, ('<s>', 'i'): 1, ('i', 'like'): 1, ('like', 'a'): 2, ('a', 'cat'): 2, ('cat', '<e>'): 2, ('<s>', 'this'): 1, ('this', 'dog'): 1, ('dog', 'is'): 1, ('is', 'like'): 1}
+```
