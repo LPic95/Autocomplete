@@ -319,5 +319,6 @@ Size of vocabulary: 14821
 **Develop N-gram based language models
 
 L'assunzione fondamentale del modello che si intende implementare è che la probabilità della prossima parola dipenda esclusivamente dalle precedenti n parole o n-gram
-The conditional probability for the word at position 't' in the sentence, given that the words preceding it are $w_{t-1}, w_{t-2} \cdots w_{t-n}$ is:
-$$ P(w_t | w_{t-1}\dots w_{t-n}) \tag{1}$$
+The conditional probability for the word at position 't' in the sentence, given that the words preceding it are 
+<img src="https://render.githubusercontent.com/render/math?math=w_{t-1}, w_{t-2} \cdots w_{t-n}"> is:
+<img src="https://render.githubusercontent.com/render/math?math=P(w_t | w_{t-1}\dots w_{t-n})">.
