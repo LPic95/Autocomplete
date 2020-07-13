@@ -513,5 +513,174 @@ The following function calculates the probabilities of each word given the previ
     prob_matrix = count_matrix.div(count_matrix.sum(axis=1), axis=0)
     return prob_matrix
  ```
+<p align="justify">
+  
+Once the matrix representation is set, the loss function should be implemented here, known as perplexity score is formulated as follows:
+<img src="https://render.githubusercontent.com/render/math?math=\sqrt[N]{ \prod_{t=n}^{N-1} \frac{1}{P(w_t | w_{t-n} \cdots w_{t-1})} } ">
+where N is the length of the sentence while n is the number of words in the n-gram (e.g. 2 for a bigram).
+
+The higher the probabilities are the greater the lower perplexity will be i.e the greater the n-grams inform about the sentence, the lower the value of perplexity will be. 
+
+</p>
+
+ ```python script
  
-      
+def calculate_perplexity(sentences, n_gram_counts, n_plus1_gram_counts, vocabulary_size, k=1.0):
+
+    n = len(list(n_gram_counts.keys())[0]) 
+    # prepend <s> and append <e>
+    sentence = ["<s>"] * n + sentences + ["<e>"]
+
+    sentence = tuple(sentence)
+    N = len(sentence)
+    product_pi = 1.0
+    for t in range(n, N): # complete this line
+
+        n_gram = sentence[t-n]
+        word = sentence[t]
+        probability = estimate_probability(word, n_gram, 
+                         n_gram_counts, n_plus1_gram_counts, vocabulary_size, k)
+        
+     
+        product_pi *= 1/probability
+
+    # Nth root of the product
+    perplexity = product_pi**(1/float(N))
+    perplexity = float(perplexity)
+ 
+    return perplexity
+  ```  
+<p align="justify">  
+  
+Next, all that remains is to combine together  the functions presented so far and define the auto-complete system.
+
+</p>
+
+ ```python script
+ 
+def suggest_a_word(previous_tokens, n_gram_counts, n_plus1_gram_counts, vocabulary, k=1.0, start_with=None):
+
+    n = len(list(n_gram_counts.keys())[0]) 
+    probabilities = estimate_probabilities(previous_n_gram,
+                                           n_gram_counts, n_plus1_gram_counts,
+                                           vocabulary, k=k)
+    suggestion = None
+    
+    max_prob = 0
+
+    for word, prob in probabilities.items(): 
+
+        if start_with != None : # complete this line
+
+            if word.startswith(start_with)==False: 
+                #If so, don't consider this word (move onto the next word)
+                continue 
+        if prob>max_prob: 
+
+            suggestion = word
+
+            max_prob = prob
+
+    return suggestion, max_prob
+  ```  
+ This function also take an optional parameter “start_with”, which specifies the first few letters of the next words.
+
+```python script
+#Example
+sentences = [['i', 'like', 'a', 'cat'],
+             ['this', 'dog', 'is', 'like', 'a', 'cat']]
+unique_words = list(set(sentences[0] + sentences[1]))
+
+unigram_counts = count_n_grams(sentences, 1)
+bigram_counts = count_n_grams(sentences, 2)
+
+previous_tokens = ["i", "like"]
+tmp_suggest1 = suggest_a_word(previous_tokens, unigram_counts, bigram_counts, unique_words, k=1.0)
+print(f"The previous words are 'i like',\n\tand the suggested word is `{tmp_suggest1[0]}` with a probability of {tmp_suggest1[1]:.4f}")
+
+print()
+#Example starts_with
+tmp_starts_with = 'c'
+tmp_suggest2 = suggest_a_word(previous_tokens, unigram_counts, bigram_counts, unique_words, k=1.0, start_with=tmp_starts_with)
+print(f"The previous words are 'i like', the suggestion must start with `{tmp_starts_with}`\n\tand the suggested word is `{tmp_suggest2[0]}` with a probability of {tmp_suggest2[1]:.4f}")
+  ``` 
+  ```
+  The previous words are 'i like',
+	and the suggested word is `a` with a probability of 0.2727
+
+  The previous words are 'i like', the suggestion must start with `c`
+	and the suggested word is `cat` with a probability of 0.0909
+  ```
+  
+The latest update allows to predict multiple word suggestions through a loop over various n-gram models.
+
+```python script
+
+  def get_suggestions(previous_tokens, n_gram_counts_list, vocabulary, k=1.0, start_with=None):
+    model_counts = len(n_gram_counts_list)
+    suggestions = []
+    for i in range(model_counts-1):
+        n_gram_counts = n_gram_counts_list[i]
+        n_plus1_gram_counts = n_gram_counts_list[i+1]
+        
+        suggestion = suggest_a_word(previous_tokens, n_gram_counts,
+                                    n_plus1_gram_counts, vocabulary,
+                                    k=k, start_with=start_with)
+        suggestions.append(suggestion)
+    return suggestions
+```   
+As a conclusion, the last applicable extensions are the combination of multiple suggestions using n-grams of varying length:
+
+```python script
+
+n_gram_counts_list = []
+for n in range(1, 6):
+    print("Computing n-gram counts with n =", n, "...")
+    n_model_counts = count_n_grams(train_data_processed, n)
+    n_gram_counts_list.append(n_model_counts)
+    
+```  
+```python script
+previous_tokens = ["i", "am", "to"]
+tmp_suggest1 = get_suggestions(previous_tokens, n_gram_counts_list, vocabulary, k=1.0)
+
+print(f"The previous words are {previous_tokens}, the suggestions are:")
+display(tmp_suggest1)
+``` 
+
+```
+The previous words are ['i', 'am', 'to'], the suggestions are:
+[('be', 0.027665685098338604),
+ ('have', 0.00013487086115044844),
+ ('have', 0.00013490725126475548),
+ ('i', 6.746272684341901e-05)]
+``` 
+```python script
+previous_tokens = ["hey", "how", "are", "you"]
+tmp_suggest2 = get_suggestions(previous_tokens, n_gram_counts_list, vocabulary, k=1.0)
+
+print(f"The previous words are {previous_tokens}, the suggestions are:")
+display(tmp_suggest2)
+``` 
+
+```
+The previous words are ['hey', 'how', 'are', 'you'], the suggestions are:
+[("'re", 0.023973994311255586),
+ ('?', 0.002888465830762161),
+ ('?', 0.0016134453781512605),
+ ('<e>', 0.00013491635186184566)]
+```
+```python script
+previous_tokens = ["hey", "how", "are", "you"]
+tmp_suggest3 = get_suggestions(previous_tokens, n_gram_counts_list, vocabulary, k=1.0, start_with="d")
+
+print(f"The previous words are {previous_tokens}, the suggestions are:")
+display(tmp_suggest3)
+```
+```
+The previous words are ['hey', 'how', 'are', 'you'], the suggestions are:
+[('do', 0.009020723283218204),
+ ('doing', 0.0016411737674785006),
+ ('doing', 0.00047058823529411766),
+ ('dvd', 6.745817593092283e-05)]
+ ```
