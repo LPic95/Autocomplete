@@ -178,7 +178,7 @@ Due to computational reasons, not all words are used but only the most frequent 
 def count_words(tokenized_sentences):   
     word_counts = {}
     for sentence in range(len(tokenized_sentences)): 
-        # Go through each token in the sentence
+        # go through tokens in the sentence
         for token in (tokenized_sentences[sentence]): 
             if token not in word_counts.keys(): 
                 word_counts[token] = 1
@@ -358,17 +358,10 @@ def estimate_probability(word, previous_n_gram,
         previous_n_grams = tuple(previous_n_gram)
     else:
         previous_n_grams = tuple([previous_n_gram])
-    # Set the denominator
     previous_n_gram_count = n_gram_counts.get(previous_n_grams,0)
-        
-    # Calculate the denominator using the count of the previous n gram
     # and apply k-smoothing
     denominator = previous_n_gram_count+vocabulary_size*1
-
-    # Define n plus 1 gram as the previous n-gram plus the current word as a tuple
     n_plus1_gram =previous_n_grams+tuple([word])
-  
-    # Set the count to the count in the dictionary
     n_plus1_gram_count = n_plus1_gram_counts.get(n_plus1_gram,0)
         
     # and apply smoothing
@@ -388,8 +381,7 @@ The function defined below loops over all words in vocabulary to calculate proba
 def estimate_probabilities(previous_n_gram, n_gram_counts, n_plus1_gram_counts, vocabulary, k=1.0):
  
     previous_n_gram = previous_n_gram
-    # add <e> <unk> to the vocabulary
-    # <s> is not needed since it should not appear as the next word
+    # add <e> <unk> to the vocabulary <s> is not needed since it should not appear as the next word
     vocabulary = vocabulary + ["<e>", "<unk>"]
     vocabulary_size = len(vocabulary)
     probabilities = {}
