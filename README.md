@@ -230,7 +230,7 @@ def replace_oov_words_by_unk(tokenized_sentences, vocabulary, unknown_token="<un
     return replaced_tokenized_sentences
 ```
 
-The focus now is to jointly use the newly implemented functions in order to identify the less frequent tokens in both training and test sets and then replace them with the "<unk>" marker.
+The focus now is to jointly use the newly implemented functions in order to identify the less frequent tokens in both training and test sets and then replace them with the "<unk\>" marker.
 
 ```python script
 
@@ -313,35 +313,19 @@ The following function count_n_grams computes the n-grams count for each arbitra
 
  ```python script
 def count_n_grams(data, n, start_token='<s>', end_token = '<e>'):
-    # Initialize dictionary of n-grams and their counts
     n_grams = {}
     for sentence in range(len(data)):
-        
-        # prepend start token n times, and  append <e> one time
         sentences = [start_token]*n+list(data[sentence])+[end_token]
-        
-        # convert list to tuple
-        # So that the sequence of words can be used as
-        # a key in the dictionary
         sentences = tuple(sentences)
-        
-        # Use 'i' to indicate the start of the n-gram
-        # from index 0
-        # to the last index where the end of the n-gram
-        # is within the sentence.
-        
         for i in range(0,len(sentences)-n+1): 
-
             # Get the n-gram from i to i+n
             n_gram = sentences[i:i+n]
-
-            # check if the n-gram is in the dictionary
+            # Is the n-gram in the dictionary?
             if n_gram in n_grams.keys(): 
-            
-                # Increment the count for this n-gram
+                # Increment the count 
                 n_grams[n_gram] += 1
             else:
-                # Initialize this n-gram count to 1
+                # otherwise is 1
                 n_grams[n_gram] = 1
     return n_grams
  ```
@@ -363,25 +347,13 @@ Bi-gram:
 <p align="justify">
   
 After defining the function that calculates the numerator and denominator, the probability of interest can now be estimated. This formula doesn't work when a count of an n-gram is zero. A way to handle zero counts is to add k-smoothing.
+
 </p>
 
 ```python script
 
 def estimate_probability(word, previous_n_gram, 
                          n_gram_counts, n_plus1_gram_counts, vocabulary_size, k=1.0):
-    """
-    Estimate the probabilities of a next word using the n-gram counts with k-smoothing
-    Args:
-        word: next word
-        previous_n_gram: A sequence of words of length n
-        n_gram_counts: Dictionary of counts of (n+1)-grams
-        n_plus1_gram_counts: Dictionary of counts of (n+1)-grams
-        vocabulary_size: number of words in the vocabulary
-        k: positive constant, smoothing parameter
-    
-    Returns:
-        A probability
-    """
     if type(previous_n_gram)==list:
         previous_n_grams = tuple(previous_n_gram)
     else:
@@ -396,18 +368,12 @@ def estimate_probability(word, previous_n_gram,
     # Define n plus 1 gram as the previous n-gram plus the current word as a tuple
     n_plus1_gram =previous_n_grams+tuple([word])
   
-    # Set the count to the count in the dictionary,
-    # otherwise 0 if not in the dictionary
-    # use the dictionary that has counts for the n-gram plus current word
+    # Set the count to the count in the dictionary
     n_plus1_gram_count = n_plus1_gram_counts.get(n_plus1_gram,0)
         
-    # Define the numerator use the count of the n-gram plus current word,
     # and apply smoothing
     numerator = n_plus1_gram_count+k
-
-    # Calculate the probability as the numerator divided by denominator
     probability = numerator/denominator
-    probability = float(probability)
     return probability
 ```
 
@@ -439,20 +405,14 @@ As the definition of probabilities is not sufficiently workable and intuitive, a
 ```python script
 
 def make_count_matrix(n_plus1_gram_counts, vocabulary):
-    # add <e> <unk> to the vocabulary
-    # <s> is omitted since it should not appear as the next word
     vocabulary = vocabulary + ["<e>", "<unk>"]
     n_grams = []
     for n_plus1_gram in n_plus1_gram_counts.keys():
         n_gram = n_plus1_gram[0:-1]
         n_grams.append(n_gram)
     n_grams = list(set(n_grams))
-    
-
     row_index = {n_gram:i for i, n_gram in enumerate(n_grams)}
-
     col_index = {word:j for j, word in enumerate(vocabulary)}
-
     nrow = len(n_grams)
     ncol = len(vocabulary)
     count_matrix = np.zeros((nrow, ncol))
@@ -497,7 +457,6 @@ The higher the probabilities are the greater the lower perplexity will be i.e th
 def calculate_perplexity(sentences, n_gram_counts, n_plus1_gram_counts, vocabulary_size, k=1.0):
 
     n = len(list(n_gram_counts.keys())[0]) 
-    # prepend <s> and append <e>
     sentence = ["<s>"] * n + sentences + ["<e>"]
 
     sentence = tuple(sentence)
@@ -533,21 +492,15 @@ def suggest_a_word(previous_tokens, n_gram_counts, n_plus1_gram_counts, vocabula
     probabilities = estimate_probabilities(previous_n_gram,
                                            n_gram_counts, n_plus1_gram_counts,
                                            vocabulary, k=k)
-    suggestion = None
-    
+    suggestion = None    
     max_prob = 0
-
     for word, prob in probabilities.items(): 
-
         if start_with != None : # complete this line
-
             if word.startswith(start_with)==False: 
-                #If so, don't consider this word (move onto the next word)
+                #If so, move onto the next word
                 continue 
         if prob>max_prob: 
-
             suggestion = word
-
             max_prob = prob
 
     return suggestion, max_prob
