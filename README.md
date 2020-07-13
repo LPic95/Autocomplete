@@ -598,3 +598,10 @@ The previous words are ['hey', 'what', 'are', 'you'], the suggestions are:
  ('do', 0.0009020723283218204),
  ('dvd', 6.745817593092283e-05)]
  ```
+ 
+Comments and footnotes
+-----------
+
+Please do not hesitate to contact me if you are interested in the script or in the implementation of any techniques.
+Thanks for your attention.
+
