@@ -1,4 +1,4 @@
-Natural language processing: Auto-Complete text
+NLP: Auto-Complete text
 ----------------
 
 <p align="justify">
