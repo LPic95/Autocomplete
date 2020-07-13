@@ -71,7 +71,7 @@ Last 300 letters of the data
 
 <p align="justify">
 
-Once the dataset is loaded, you proceed with a data split using the "\n" marker as delimiter.You go ahead by removing leading spaces and eliminating the empty strings as shown in the next code box.
+Once the dataset is loaded, the sentences are split using the "\n" marker as a delimiter. Next, the initial spaces are removed and the empty strings are deleted as shown in the next code box.
 </p>
 
 ```python script
@@ -95,19 +95,13 @@ def split_to_sentences(data):
 
 ```python script
 #Example
-x = """
-I have a pen.\nI have an apple. \nAh\nApple pen.\n
-"""
-print(x)
+x = "
+Thunder and lightning.\nEnter three Witches.
+"
 split_to_sentences(x)
 ```
 ```
-I have a pen.
-I have an apple. 
-Ah
-Apple pen.
-
-['I have a pen.', 'I have an apple.', 'Ah', 'Apple pen.']
+['Thunder and lightning.', 'Enter three Witches.']
 ```
 
 <p align="justify">
