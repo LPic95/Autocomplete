@@ -392,6 +392,7 @@ Bi-gram:
 {('<s>', '<s>'): 2, ('<s>', 'i'): 1, ('i', 'like'): 1, ('like', 'a'): 2, ('a', 'cat'): 2, ('cat', '<e>'): 2, ('<s>', 'this'): 1, ('this', 'dog'): 1, ('dog', 'is'): 1, ('is', 'like'): 1}
 ```
 <p align="justify">
+  
 After defining the function that calculates the numerator and denominator, the probability of interest can now be estimated.This formula doesn't work when a count of an n-gram is zero. A way to handle zero counts is to add k-smoothing.
 </p>
 
@@ -440,9 +441,15 @@ def estimate_probability(word, previous_n_gram,
     probability = float(probability)
     return probability
 ```
-The function defined below loops over all words in vocabulary to calculate probabilities for all possible words.
+
+<p align="justify">
+  
+The function defined below loops over all words in vocabulary to calculate probabilities for all possible words. The K-smoothing adds a positive constant k to each numerator and a <img src="https://render.githubusercontent.com/render/math?math=k \times |V|"> factor to the denominator, where <img src="https://render.githubusercontent.com/render/math?math=|V|"> is the number of words in the vocabulary.
+
+</p>
 
 ```python script
+
 def estimate_probabilities(previous_n_gram, n_gram_counts, n_plus1_gram_counts, vocabulary, k=1.0):
  
     previous_n_gram = previous_n_gram
@@ -458,11 +465,10 @@ def estimate_probabilities(previous_n_gram, n_gram_counts, n_plus1_gram_counts, 
         probabilities[word] = probability
     return probabilities
 ```
-- It can be more intuitive to present them as count or probability matrices.
-- The functions defined in the next cells return count or probability matrices.
-- This function is provided for you.
+As the definition of probabilities is not sufficiently workable and intuitive, a frequency matrix and then a probability one is set out below.
 
 ```python script
+
 def make_count_matrix(n_plus1_gram_counts, vocabulary):
     # add <e> <unk> to the vocabulary
     # <s> is omitted since it should not appear as the next word
@@ -493,7 +499,11 @@ def make_count_matrix(n_plus1_gram_counts, vocabulary):
     count_matrix = pd.DataFrame(count_matrix, index=n_grams, columns=vocabulary)
     return count_matrix
  ```
+ <p align="justify">
+  
 The following function calculates the probabilities of each word given the previous n-gram, and stores this in matrix form.
+
+</p>
 
  ```python script
  
