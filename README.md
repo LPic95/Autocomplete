@@ -85,8 +85,6 @@ def split_to_sentences(data):
         A list of sentences
     """
     sentences = data.split("\n")
-    # - Remove leading and trailing spaces from each sentence
-    # - Drop sentences if they are empty strings.
     sentences = [s.strip() for s in sentences]
     sentences = [s for s in sentences if len(s) > 0] 
     return sentences   
@@ -111,18 +109,11 @@ At this stage, special attention is also provided to convert all words into lowe
 
 ```python script
 def tokenize_sentences(sentences):
-    # Initialize the list of lists of tokenized sentences
     tokenized_sentences = []
-    # Go through each sentence
     for sentence in sentences:
-        
-        # Convert to lowercase letters
         sentence = sentence.lower()
-        
-        # Convert into a list of words
         tokenized = nltk.word_tokenize(sentence)
-        
-        # append the list of words to the list of lists
+        # append the list of words to the list 
         tokenized_sentences.append(tokenized)
     
     return tokenized_sentences
@@ -132,6 +123,7 @@ def tokenize_sentences(sentences):
 sentences = ["Sky is blue.", "Leaves are green.", "Roses are red."]
 tokenize_sentences(sentences)
 ```
+
 ```
 [['sky', 'is', 'blue', '.'],
  ['leaves', 'are', 'green', '.'],
