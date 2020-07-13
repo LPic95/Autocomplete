@@ -145,7 +145,7 @@ Now the train and the test set are defined, as each sentence is divided into tok
 ```python script
 tokenized_data = get_tokenized_data(data)
 random.seed(87)
-random.shuffle(tokenized_data)
+random.shuffle(tokenized_data)# changes the original list/tuple/string
 train_size = int(len(tokenized_data) * 0.8)
 train_data = tokenized_data[0:train_size]
 test_data = tokenized_data[train_size:]
@@ -189,9 +189,8 @@ def count_words(tokenized_sentences):
 <p align="justify">
 	
 In the definition of auto-complete systems the treatment of words that are missing in the training is of crucial importance. They are known as unknown word or out of vocabulary words. The main related problem is that if they are not observed in training set, the model is incapable of determining which words to suggest.
-To handle unknown words during prediction, a special token is used to represent all unknown words 'unk'. 
-A canonical approach in this context is to modify the training dataset so that it has some 'unknown' words to train on.
-In detail, there is a tendency to convert words that occur less frequently into "unk" tokens.
+To handle unknown words during prediction, a special token is used to represent all unknown words 'unk'. A canonical approach in this context is to modify the training dataset so that it has some 'unknown' words to train on. In detail, there is a tendency to convert words that occur less frequently into "unk" tokens.
+
 </p>
 
 ```python script
