@@ -73,7 +73,9 @@ Last 300 letters of the data
 
 Once the dataset is loaded, you proceed with a data split using the "\n" marker as delimiter.You go ahead by removing leading spaces and eliminating the empty strings as shown in the next code box.
 </p>
+
 ```python script
+
 def split_to_sentences(data):
     """
     Split data by linebreak "\n"
@@ -87,7 +89,8 @@ def split_to_sentences(data):
     # - Drop sentences if they are empty strings.
     sentences = [s.strip() for s in sentences]
     sentences = [s for s in sentences if len(s) > 0] 
-    return sentences    
+    return sentences   
+    
 ```
 
 ```python script
@@ -183,7 +186,9 @@ First test sample
 ```
 Due to computational reasons, not all words are used but only the most frequent ones, so it is defined a function that can enumerate the frequency of each word and then consider only those that appear more than N times in the train dataset.
 </p>
+
 ```python script
+
 def count_words(tokenized_sentences):   
     word_counts = {}
     for sentence in range(len(tokenized_sentences)): 
@@ -201,7 +206,9 @@ To handle unknown words during prediction, use a special token to represent all 
 A canonical approach in this context is to modify the training dataset so that it has some 'unknown' words to train on.
 In detail, there is a tendency to convert words that occur less frequently into "unk" tokens.
 </p>
+
 ```python script
+
 def get_words_with_nplus_frequency(tokenized_sentences, count_threshold):
     # Initialize an empty list to contain the words that
     # appear at least 'minimum_freq' times.
@@ -221,6 +228,7 @@ def get_words_with_nplus_frequency(tokenized_sentences, count_threshold):
 ```
 
 ```python script
+
 def replace_oov_words_by_unk(tokenized_sentences, vocabulary, unknown_token="<unk>"):
   
     vocabulary = set(vocabulary)
@@ -255,6 +263,7 @@ def replace_oov_words_by_unk(tokenized_sentences, vocabulary, unknown_token="<un
 The focus now is to jointly use the newly implemented functions in order to identify the less frequent tokens in both training and test sets and then replace them with the "<unk>" marker.
 
 ```python script
+
 def preprocess_data(train_data, test_data, count_threshold):
     # Get the closed vocabulary using the train data
     vocabulary = get_words_with_nplus_frequency(train_data,count_threshold)
@@ -332,6 +341,7 @@ When computing the counts for n-grams, prepare the sentence beforehand by prepen
 </p>
 
 The following function count_n_grams computes the n-grams count for each arbitrary n number.
+
  ```python script
 def count_n_grams(data, n, start_token='<s>', end_token = '<e>'):
     # Initialize dictionary of n-grams and their counts
@@ -384,7 +394,9 @@ Bi-gram:
 <p align="justify">
 After defining the function that calculates the numerator and denominator, the probability of interest can now be estimated.This formula doesn't work when a count of an n-gram is zero. A way to handle zero counts is to add k-smoothing.
 </p>
+
 ```python script
+
 def estimate_probability(word, previous_n_gram, 
                          n_gram_counts, n_plus1_gram_counts, vocabulary_size, k=1.0):
     """
@@ -429,6 +441,7 @@ def estimate_probability(word, previous_n_gram,
     return probability
 ```
 The function defined below loops over all words in vocabulary to calculate probabilities for all possible words.
+
 ```python script
 def estimate_probabilities(previous_n_gram, n_gram_counts, n_plus1_gram_counts, vocabulary, k=1.0):
  
@@ -481,7 +494,9 @@ def make_count_matrix(n_plus1_gram_counts, vocabulary):
     return count_matrix
  ```
 The following function calculates the probabilities of each word given the previous n-gram, and stores this in matrix form.
+
  ```python script
+ 
  def make_probability_matrix(n_plus1_gram_counts, vocabulary, k):
     count_matrix = make_count_matrix(n_plus1_gram_counts, unique_words)
     count_matrix += k
