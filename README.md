@@ -592,7 +592,7 @@ print(f"The previous words are {previous_tokens}, the suggestions are:")
 display(tmp_suggest3)
 ```
 ```
-The previous words are ['hey', 'how', 'are', 'you'], the suggestions are:
+The previous words are ['hey', 'what', 'are', 'you'], the suggestions are:
 [('doing', 0.016411737674785006),
  ('doing', 0.0047058823529411766),
  ('do', 0.0009020723283218204),
