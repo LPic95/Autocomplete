@@ -136,13 +136,11 @@ The functions described so far are jointly adopted to apply them to an entire da
 
 ```python script
 def get_tokenized_data(data):
-    # Get the sentences by splitting up the data
     sentences = split_to_sentences(data)
-    # Get the list of lists of tokens by tokenizing the sentences
     tokenized_sentences = tokenize_sentences(sentences)
     return tokenized_sentences
 ```
-Now the train and the test set are defined, as each sentence is divided into tokens, 
+Now the train and the test set are defined, as each sentence is divided into tokens:
 
 ```python script
 tokenized_data = get_tokenized_data(data)
@@ -170,6 +168,8 @@ First training sample:
 First test sample
 ['that', 'picture', 'i', 'just', 'seen', 'whoa', 'dere', '!', '!', '>', '>', '>', '>', '>', '>', '>']
 ```
+<p align="justify">
+	
 Due to computational reasons, not all words are used but only the most frequent ones, so it is defined a function that can enumerate the frequency of each word and then consider only those that appear more than N times in the train dataset.
 </p>
 
@@ -187,8 +187,9 @@ def count_words(tokenized_sentences):
     return word_counts
 ```
 <p align="justify">
+	
 In the definition of auto-complete systems the treatment of words that are missing in the training is of crucial importance. They are known as unknown word or out of vocabulary words. The main related problem is that if they are not observed in training set, the model is incapable of determining which words to suggest.
-To handle unknown words during prediction, use a special token to represent all unknown words 'unk'. 
+To handle unknown words during prediction, a special token is used to represent all unknown words 'unk'. 
 A canonical approach in this context is to modify the training dataset so that it has some 'unknown' words to train on.
 In detail, there is a tendency to convert words that occur less frequently into "unk" tokens.
 </p>
@@ -196,19 +197,12 @@ In detail, there is a tendency to convert words that occur less frequently into 
 ```python script
 
 def get_words_with_nplus_frequency(tokenized_sentences, count_threshold):
-    # Initialize an empty list to contain the words that
     # appear at least 'minimum_freq' times.
     closed_vocab = []
- 
     word_counts = count_words(tokenized_sentences)
-
-    # for each word and its count
     for word, cnt in word_counts.items(): 
-        
-        # check that the word's count
-        # is at least as great as the minimum count
-        if cnt>=count_threshold:
 
+        if cnt>=count_threshold:
             closed_vocab.append(word)
     return closed_vocab
 ```
@@ -216,32 +210,22 @@ def get_words_with_nplus_frequency(tokenized_sentences, count_threshold):
 ```python script
 
 def replace_oov_words_by_unk(tokenized_sentences, vocabulary, unknown_token="<unk>"):
-  
     vocabulary = set(vocabulary)
-    
-    # Initialize a list that will hold the sentences
-    # after less frequent words are replaced by the unknown token
+
     replaced_tokenized_sentences = []
     
-    # Go through each sentence
+    # go through sentences
     for sentence in tokenized_sentences:
-        
-        # Initialize the list that will contain
-        # a single sentence with "unknown_token" replacements
         replaced_sentence = []
-
-        # for each token in the sentence
+        # go through tokens
         for token in sentence: 
-            
-            # Check if the token is in the closed vocabulary
+            # Is the token in the closed vocabulary?
             if token in vocabulary:
                 # If so, append the word to the replaced_sentence
                 replaced_sentence.append(token)
             else:
-                # otherwise, append the unknown token instead
+                # otherwise, append the unknown token 
                 replaced_sentence.append(unknown_token)
-
-        # Append the list of tokens to the list of lists
         replaced_tokenized_sentences.append(replaced_sentence)    
     return replaced_tokenized_sentences
 ```
@@ -251,11 +235,10 @@ The focus now is to jointly use the newly implemented functions in order to iden
 ```python script
 
 def preprocess_data(train_data, test_data, count_threshold):
-    # Get the closed vocabulary using the train data
     vocabulary = get_words_with_nplus_frequency(train_data,count_threshold)
     train_data_replaced=[]
     test_data_replaced=[]
-    # For the train data, replace less common words with "<unk>"
+    # replace less common words with "<unk>" training set
     for sentence in range(len(train_data)):
         parole=[]
         for word in range(len(train_data[sentence])):
@@ -265,8 +248,7 @@ def preprocess_data(train_data, test_data, count_threshold):
                 parole.append("<unk>")
                 
         train_data_replaced.append(parole)
-    # For the test data, replace less common words with "<unk>"
-    
+    # replace less common words with "<unk>" test set
     for sentence in range(len(test_data)):
         parole_test=[]
         for word in range(len(test_data[sentence])):
@@ -275,7 +257,6 @@ def preprocess_data(train_data, test_data, count_threshold):
             else:
                 parole_test.append("<unk>")
         test_data_replaced.append(parole_test)
-
     return train_data_replaced, test_data_replaced, vocabulary
   ```
 The data preprocess is almost finished, it' s only a matter of choosing a minimum frequency for the words.
@@ -313,17 +294,19 @@ Size of vocabulary: 14821
 
 N-gram based language models
 ----------------
+
 <p align="justify">
+	
 The key assumption behind the model is that the probability of the next word depends exclusively on the previous n-words or n-gram.
-The conditional probability for the word at position 't' in the sentence, given that the words preceding it are 
+The conditional probability for the word at position 't' in the sentence, given that the previous words are 
 <img src="https://render.githubusercontent.com/render/math?math=w_{t-1}, w_{t-2} \cdots w_{t-n}"> is:
 <img src="https://render.githubusercontent.com/render/math?math=P(w_t | w_{t-1}\dots w_{t-n})">. The probability is estimated as follows: <img src="https://render.githubusercontent.com/render/math?math=\hat{P}(w_t | w_{t-1}\dots w_{t-n}) = \frac{C(w_{t-1}\dots w_{t-n}, w_n)}{C(w_{t-1}\dots w_{t-n})}"> where <img src="https://render.githubusercontent.com/render/math?math=C(\cdots)"> denotes the number of occurence of the given sequence. The numerator is the number of times word 't' appears after words t-1 through t-n appear in the training data while the denominator is the number of times word t-1 through t-n appears in the training data.
 
-When computing the counts for n-grams, prepare the sentence beforehand by prepending <img src="https://render.githubusercontent.com/render/math?math=n-1"> starting markers "<s\>" to indicate the beginning of the sentence.
+When computing the counts for n-grams, the sentence has to be prepared beforehand by prepending <img src="https://render.githubusercontent.com/render/math?math=n-1"> starting markers "<s\>" to indicate the beginning of the sentence.
   
->For example, in the bi-gram model (N=2), a sequence with two start tokens "<s\><s\>" should predict the first word of a >sentence.
+>For example, in the bi-gram model (N=2), a sequence with two start tokens "<s\><s\>" should predict the first word of a sentence.
 >So, if the sentence is "I like food", modify it to be "<s\><s\> I like food".
->Also prepare the sentence for counting by appending an end token "<e\>" so that the model can predict when to finish a >sentence.
+>Also prepare the sentence for counting by appending an end token "<e\>" so that the model can predict when to finish a sentence.
 </p>
 
 The following function count_n_grams computes the n-grams count for each arbitrary n number.
@@ -379,7 +362,7 @@ Bi-gram:
 ```
 <p align="justify">
   
-After defining the function that calculates the numerator and denominator, the probability of interest can now be estimated.This formula doesn't work when a count of an n-gram is zero. A way to handle zero counts is to add k-smoothing.
+After defining the function that calculates the numerator and denominator, the probability of interest can now be estimated. This formula doesn't work when a count of an n-gram is zero. A way to handle zero counts is to add k-smoothing.
 </p>
 
 ```python script
